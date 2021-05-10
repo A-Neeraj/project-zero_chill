@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:chill/repositories/userRepository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meta/meta.dart';
+
 import './bloc.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
@@ -19,10 +21,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   @override
   Stream<ProfileState> mapEventToState(ProfileEvent event) async* {
     if (event is NameChanged) {
+      print('Hi ' + event.name);
       yield* _mapNameChangedToState(event.name);
     } else if (event is AgeChanged) {
       yield* _mapAgeChangedToState(event.age);
+      print(event.age);
     } else if (event is GenderChanged) {
+      print('Gender: ' + event.gender);
       yield* _mapGenderChangedToState(event.gender);
     } else if (event is InterestedInChanged) {
       yield* _mapInterestedInChangedToState(event.interestedIn);

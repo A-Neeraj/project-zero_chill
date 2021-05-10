@@ -9,9 +9,9 @@ import 'package:chill/ui/constants.dart';
 import 'package:chill/ui/widgets/message.dart';
 import 'package:chill/ui/widgets/photo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Messaging extends StatefulWidget {
   final User currentUser, selectedUser;
@@ -27,6 +27,8 @@ class _MessagingState extends State<Messaging> {
   MessagingRepository _messagingRepository = MessagingRepository();
   MessagingBloc _messagingBloc;
   bool isValid = false;
+
+  final picker = ImagePicker();
 
 //  bool get isPopulated => _messageTextController.text.isNotEmpty;
 //
@@ -129,7 +131,7 @@ class _MessagingState extends State<Messaging> {
                             fontSize: 16.0, fontWeight: FontWeight.bold),
                       );
                     }
-                    if (snapshot.data.documents.isNotEmpty) {
+                    if (snapshot.data.docs.isNotEmpty) {
                       return Expanded(
                         child: Column(
                           children: <Widget>[
@@ -139,11 +141,10 @@ class _MessagingState extends State<Messaging> {
                                 itemBuilder: (BuildContext context, int index) {
                                   return MessageWidget(
                                     currentUserId: widget.currentUser.uid,
-                                    messageId: snapshot
-                                        .data.documents[index].documentID,
+                                    messageId: snapshot.data.docs[index].id,
                                   );
                                 },
-                                itemCount: snapshot.data.documents.length,
+                                itemCount: snapshot.data.docs.length,
                               ),
                             )
                           ],
@@ -168,8 +169,16 @@ class _MessagingState extends State<Messaging> {
                     children: <Widget>[
                       GestureDetector(
                         onTap: () async {
-                          File photo =
-                              await FilePicker.getFile(type: FileType.image);
+                          // File photo =
+                          //     await FilePicker.getFile(type: FileType.image);
+                          File photo;
+                          final pickedFile = await picker.getImage(
+                              source: ImageSource.gallery);
+                          setState(() {
+                            if (pickedFile != null) {
+                              photo = File(pickedFile.path);
+                            }
+                          });
                           if (photo != null) {
                             _messagingBloc.add(
                               SendMessageEvent(

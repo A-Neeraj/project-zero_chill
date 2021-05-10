@@ -47,7 +47,7 @@ class _MessagesState extends State<Messages> {
                 return Text("No data");
               }
 
-              if (snapshot.data.documents.isNotEmpty) {
+              if (snapshot.data.docs.isNotEmpty) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
                     child: CircularProgressIndicator(),
@@ -55,14 +55,12 @@ class _MessagesState extends State<Messages> {
                 } else {
                   return ListView.builder(
                     scrollDirection: Axis.vertical,
-                    itemCount: snapshot.data.documents.length,
+                    itemCount: snapshot.data.docs.length,
                     itemBuilder: (BuildContext context, int index) {
                       return ChatWidget(
-                        creationTime:
-                            snapshot.data.documents[index].data['timestamp'],
+                        creationTime: snapshot.data.docs[index]['timestamp'],
                         userId: widget.userId,
-                        selectedUserId:
-                            snapshot.data.documents[index].documentID,
+                        selectedUserId: snapshot.data.docs[index].id,
                       );
                     },
                   );

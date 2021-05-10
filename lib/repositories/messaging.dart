@@ -4,43 +4,44 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 
 class MessagingRepository {
-  final Firestore _firestore;
+  final FirebaseFirestore _firestore;
   final FirebaseStorage _firebaseStorage;
   String uuid = Uuid().v4();
 
-  MessagingRepository({FirebaseStorage firebaseStorage, Firestore firestore})
+  MessagingRepository(
+      {FirebaseStorage firebaseStorage, FirebaseFirestore firestore})
       : _firebaseStorage = firebaseStorage ?? FirebaseStorage.instance,
-        _firestore = firestore ?? Firestore.instance;
+        _firestore = firestore ?? FirebaseFirestore.instance;
 
   Future sendMessage({Message message}) async {
-    StorageUploadTask storageUploadTask;
-    DocumentReference messageRef = _firestore.collection('messages').document();
+    UploadTask storageUploadTask;
+    DocumentReference messageRef = _firestore.collection('messages').doc();
     CollectionReference senderRef = _firestore
         .collection('users')
-        .document(message.senderId)
+        .doc(message.senderId)
         .collection('chats')
-        .document(message.selectedUserId)
+        .doc(message.selectedUserId)
         .collection('messages');
 
     CollectionReference sendUserRef = _firestore
         .collection('users')
-        .document(message.selectedUserId)
+        .doc(message.selectedUserId)
         .collection('chats')
-        .document(message.senderId)
+        .doc(message.senderId)
         .collection('messages');
 
     if (message.photo != null) {
-      StorageReference photoRef = _firebaseStorage
+      Reference photoRef = _firebaseStorage
           .ref()
           .child('messages')
-          .child(messageRef.documentID)
+          .child(messageRef.id)
           .child(uuid);
 
       storageUploadTask = photoRef.putFile(message.photo);
 
-      await storageUploadTask.onComplete.then((photo) async {
+      await storageUploadTask.then((photo) async {
         await photo.ref.getDownloadURL().then((photoUrl) async {
-          await messageRef.setData({
+          await messageRef.set({
             'senderName': message.senderName,
             'senderId': message.senderId,
             'text': null,
@@ -50,30 +51,26 @@ class MessagingRepository {
         });
       });
 
-      senderRef
-          .document(messageRef.documentID)
-          .setData({'timestamp': DateTime.now()});
+      senderRef.doc(messageRef.id).set({'timestamp': DateTime.now()});
 
-      sendUserRef
-          .document(messageRef.documentID)
-          .setData({'timestamp': DateTime.now()});
+      sendUserRef.doc(messageRef.id).set({'timestamp': DateTime.now()});
 
       await _firestore
           .collection('users')
-          .document(message.senderId)
+          .doc(message.senderId)
           .collection('chats')
-          .document(message.selectedUserId)
-          .updateData({'timestamp': DateTime.now()});
+          .doc(message.selectedUserId)
+          .update({'timestamp': DateTime.now()});
 
       await _firestore
           .collection('users')
-          .document(message.selectedUserId)
+          .doc(message.selectedUserId)
           .collection('chats')
-          .document(message.senderId)
-          .updateData({'timestamp': DateTime.now()});
+          .doc(message.senderId)
+          .update({'timestamp': DateTime.now()});
     }
     if (message.text != null) {
-      await messageRef.setData({
+      await messageRef.set({
         'senderName': message.senderName,
         'senderId': message.senderId,
         'text': message.text,
@@ -81,36 +78,32 @@ class MessagingRepository {
         'timestamp': DateTime.now(),
       });
 
-      senderRef
-          .document(messageRef.documentID)
-          .setData({'timestamp': DateTime.now()});
+      senderRef.doc(messageRef.id).set({'timestamp': DateTime.now()});
 
-      sendUserRef
-          .document(messageRef.documentID)
-          .setData({'timestamp': DateTime.now()});
+      sendUserRef.doc(messageRef.id).set({'timestamp': DateTime.now()});
 
       await _firestore
           .collection('users')
-          .document(message.senderId)
+          .doc(message.senderId)
           .collection('chats')
-          .document(message.selectedUserId)
-          .updateData({'timestamp': DateTime.now()});
+          .doc(message.selectedUserId)
+          .update({'timestamp': DateTime.now()});
 
       await _firestore
           .collection('users')
-          .document(message.selectedUserId)
+          .doc(message.selectedUserId)
           .collection('chats')
-          .document(message.senderId)
-          .updateData({'timestamp': DateTime.now()});
+          .doc(message.senderId)
+          .update({'timestamp': DateTime.now()});
     }
   }
 
   Stream<QuerySnapshot> getMessages({currentUserId, selectedUserId}) {
     return _firestore
         .collection('users')
-        .document(currentUserId)
+        .doc(currentUserId)
         .collection('chats')
-        .document(selectedUserId)
+        .doc(selectedUserId)
         .collection('messages')
         .orderBy('timestamp', descending: false)
         .snapshots();
@@ -121,7 +114,7 @@ class MessagingRepository {
 
     await _firestore
         .collection('messages')
-        .document(messageId)
+        .doc(messageId)
         .get()
         .then((message) {
       _message.senderId = message['senderId'];

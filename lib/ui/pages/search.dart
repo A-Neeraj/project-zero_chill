@@ -27,12 +27,13 @@ class _SearchState extends State<Search> {
   int difference;
 
   getDifference(GeoPoint userLocation) async {
-    Position position = await Geolocator().getCurrentPosition();
+    Position position = await Geolocator.getCurrentPosition();
 
-    double location = await Geolocator().distanceBetween(userLocation.latitude,
+    double location = await Geolocator.distanceBetween(userLocation.latitude,
         userLocation.longitude, position.latitude, position.longitude);
 
     difference = location.toInt();
+    print(difference);
   }
 
   @override
@@ -50,6 +51,7 @@ class _SearchState extends State<Search> {
       bloc: _searchBloc,
       builder: (context, state) {
         if (state is InitialSearchState) {
+          print('Initial');
           _searchBloc.add(
             LoadUserEvent(userId: widget.userId),
           );

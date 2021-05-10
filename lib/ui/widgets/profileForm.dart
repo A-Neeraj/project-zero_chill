@@ -7,12 +7,12 @@ import 'package:chill/repositories/userRepository.dart';
 import 'package:chill/ui/constants.dart';
 import 'package:chill/ui/widgets/gender.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileForm extends StatefulWidget {
   final UserRepository _userRepository;
@@ -33,6 +33,7 @@ class _ProfileFormState extends State<ProfileForm> {
   File photo;
   GeoPoint location;
   ProfileBloc _profileBloc;
+  final picker = ImagePicker();
 
   //UserRepository get _userRepository => widget._userRepository;
 
@@ -44,14 +45,15 @@ class _ProfileFormState extends State<ProfileForm> {
       age != null;
 
   bool isButtonEnabled(ProfileState state) {
+    print(isFilled);
     return isFilled && !state.isSubmitting;
   }
 
   _getLocation() async {
-    Position position = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
 
-    location = GeoPoint(position.latitude, position.longitude);
+    location = await GeoPoint(position.latitude, position.longitude);
   }
 
   _onSubmitted() async {
@@ -142,25 +144,37 @@ class _ProfileFormState extends State<ProfileForm> {
                       child: photo == null
                           ? GestureDetector(
                               onTap: () async {
-                                File getPic = await FilePicker.getFile(
-                                    type: FileType.image);
-                                if (getPic != null) {
-                                  setState(() {
-                                    photo = getPic;
-                                  });
-                                }
+                                final pickedFile = await picker.getImage(
+                                    source: ImageSource.gallery);
+                                // File getPic = await FilePicker.getFile(
+                                //     type: FileType.image);
+                                // if (getPic != null) {
+                                //   setState(() {
+                                //     photo = getPic;
+                                //   });
+                                setState(() {
+                                  if (pickedFile != null) {
+                                    photo = File(pickedFile.path);
+                                  }
+                                });
                               },
                               child: Image.asset('assets/profilephoto.png'),
                             )
                           : GestureDetector(
                               onTap: () async {
-                                File getPic = await FilePicker.getFile(
-                                    type: FileType.image);
-                                if (getPic != null) {
-                                  setState(() {
-                                    photo = getPic;
-                                  });
-                                }
+                                // File getPic = await FilePicker.getFile(
+                                //     type: FileType.image);
+                                // if (getPic != null) {
+                                //   setState(() {
+                                //     photo = getPic;
+                                //   });
+                                final pickedFile = await picker.getImage(
+                                    source: ImageSource.gallery);
+                                setState(() {
+                                  if (pickedFile != null) {
+                                    photo = File(pickedFile.path);
+                                  }
+                                });
                               },
                               child: CircleAvatar(
                                 radius: size.width * 0.3,
