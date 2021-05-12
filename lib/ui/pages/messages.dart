@@ -2,6 +2,7 @@ import 'package:chill/bloc/message/bloc.dart';
 import 'package:chill/repositories/messageRepository.dart';
 import 'package:chill/ui/widgets/chat.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -26,6 +27,7 @@ class _MessagesState extends State<Messages> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return BlocBuilder<MessageBloc, MessageState>(
       bloc: _messageBloc,
       builder: (BuildContext context, MessageState state) {
@@ -66,9 +68,42 @@ class _MessagesState extends State<Messages> {
                   );
                 }
               } else
-                return Text(
-                  " You don't have any conversations",
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                return Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: size.height * 0.15),
+                    child: Container(
+                      child: Column(
+                        children: [
+                          Container(
+                            height: size.height * 0.2,
+                            width: MediaQuery.of(context).size.width * 0.4,
+                            child: new FlareActor(
+                              "assets/animations/chat.flr",
+                              alignment: Alignment.center,
+                              fit: BoxFit.fill,
+                              animation: "Untitled",
+                            ),
+                          ),
+                          Container(
+                            child: Visibility(
+                              // visible: _isVisible,
+                              child: Container(
+                                height: 20,
+                                alignment: Alignment.center,
+                                width: MediaQuery.of(context).size.width * 0.9,
+                                child: Text(
+                                  " You don't have any conversations",
+                                  style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 );
             },
           );

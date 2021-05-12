@@ -42,6 +42,8 @@ dependencies:
   extended_image: ^4.1.0
   timeago: ^3.0.2
   uuid: ^3.0.4
+  rive: ^0.6.2
+  flare_flutter: ^2.0.6
 
 
 dev_dependencies:
@@ -56,6 +58,7 @@ dev_dependencies:
 flutter:
   assets:
     - assets/profilephoto.png
+    - assets/animations/
 
 
 

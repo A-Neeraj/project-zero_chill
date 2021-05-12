@@ -2,7 +2,6 @@ import 'package:chill/bloc/authentication/authentication_bloc.dart';
 import 'package:chill/bloc/authentication/authentication_state.dart';
 import 'package:chill/repositories/userRepository.dart';
 import 'package:chill/ui/pages/profile.dart';
-
 import 'package:chill/ui/pages/splash.dart';
 import 'package:chill/ui/widgets/tabs.dart';
 import 'package:flutter/material.dart';
@@ -19,12 +18,13 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Size size = MediaQuery.of(context).size;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
           if (state is Uninitialized) {
-            return Splash();
+            Splash();
           }
           if (state is Authenticated) {
             return Tabs(
@@ -47,4 +47,9 @@ class Home extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<void> _delay() async {
+  await Future.delayed(Duration(seconds: 60), () {});
+  // return true;
 }

@@ -6,6 +6,7 @@ import 'package:chill/ui/widgets/profile.dart';
 import 'package:chill/ui/widgets/userGender.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -74,12 +75,82 @@ class _SearchState extends State<Search> {
 
           getDifference(_user.location);
           if (_user.location == null) {
-            return Text(
-              "No One Here",
-              style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black),
+            return Center(
+              child: Padding(
+                padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.15),
+                child: Container(
+                  child: Column(
+                    children: [
+                      Container(
+                        child: Visibility(
+                          // visible: _isVisible,
+                          child: Container(
+                            height: 20,
+                            alignment: Alignment.center,
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            child: Text(
+                              "No more people. Waiting!!",
+                              style: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.w400),
+                              // scrollAxis: Axis.horizontal,
+                              // crossAxisAlignment: CrossAxisAlignment.start,
+                              // blankSpace: 20.0,
+                              // startPadding: 3,
+                              // velocity: 50.0,
+                              // pauseAfterRound: Duration(seconds: 1),
+                              // showFadingOnlyWhenScrolling: true,
+                              // fadingEdgeStartFraction: 0.1,
+                              // fadingEdgeEndFraction: 0.1,
+                              // numberOfRounds: 100,
+                              // accelerationDuration: Duration(seconds: 1),
+                              // accelerationCurve: Curves.linear,
+                              // decelerationDuration: Duration(milliseconds: 500),
+                              // decelerationCurve: Curves.easeOut,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Container(
+                            child: Visibility(
+                              // visible: _isVisible,
+                              child: Container(
+                                height: size.height * 0.2,
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                child: new FlareActor(
+                                  "assets/animations/waiting.flr",
+                                  alignment: Alignment.center,
+                                  fit: BoxFit.fill,
+                                  animation: "Blue",
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            child: Visibility(
+                              // visible: _isVisible,
+                              child: Container(
+                                height: size.height * 0.4,
+                                width: MediaQuery.of(context).size.width * 0.55,
+                                child: new FlareActor(
+                                  "assets/animations/construction.flr",
+                                  alignment: Alignment.center,
+                                  fit: BoxFit.contain,
+                                  animation: "EmptyCards",
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             );
           } else
             return profileWidget(
